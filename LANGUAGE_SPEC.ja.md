@@ -3,7 +3,22 @@
 > この文書は **Bitlang Preprocessed** の仕様であり、Bitlang 本体の仕様ではない。
 > Bitlang Preprocessed は Bitlang のプリプロセッサ出力として利用される独立した言語として扱う。
 
-## 1. 識別子と大文字小文字
+## 1. 基本設計原則
+
+Bitlang Preprocessed は、プリプロセッサ後のプログラムについて意味論上必要となる条件を可能な限り明示的に保持する。
+
+Bitlang 本体では省略・推論・糖衣構文を許可できるが、Bitlang Preprocessed ではプリプロセッサがそれらを解決し、必要なプロパティを明示した状態で出力する。
+
+### 全条件明示の原則
+
+- 意味論上重要な状態を暗黙の既定値に依存させない。
+- プリプロセッサが推論できる情報であっても、Preprocessed 出力では明示する。
+- 静的解析器および後段のコンパイラが、周辺コードや暗黙規則を推測せずに対象の性質を判断できる形を目標とする。
+- 互いに反対の意味を持つ状態について、一方だけを省略形として扱わず、双方を明示的なプロパティとして表現する。
+
+この原則は nullability、所有・寿命、変更可否など、今後定義される意味論上のプロパティ全般に適用する。
+
+## 2. 識別子と大文字小文字
 
 Bitlang Preprocessed では、文字列値および文字値を除き、大文字小文字を区別しない。
 
@@ -32,7 +47,7 @@ var int hitpoint = 200; // 同一識別子の重複定義
 var int hit_point = 300; // 別識別子
 ```
 
-## 2. 文字列型と文字型
+## 3. 文字列型と文字型
 
 文字列値および文字値は大文字小文字を区別する。
 
@@ -43,7 +58,27 @@ var int hit_point = 300; // 別識別子
 
 識別子の case-insensitive 規則は、文字列および文字の内容には適用しない。
 
-## 3. Bitlang Compiled への名前展開
+## 4. Nullability プロパティ
+
+Bitlang Preprocessed では nullability を暗黙にしない。
+
+nullability を持つ対象には、次のどちらかのプロパティを明示する。
+
+- `nullable` : `null` を取り得る。
+- `unnullable` : `null` を取ることができない。
+
+`unnullable` は `nullable` の省略時既定値ではなく、独立した明示プロパティである。
+同様に `nullable` も例外指定ではない。
+
+したがって、Preprocessed の正規化済み表現では「プロパティが書かれていないので non-null とみなす」といった暗黙規則を使用しない。
+
+プリプロセッサは Bitlang 側の記述や型・式・制御フローから nullability を決定できる場合でも、Preprocessed を生成する際には決定結果を `nullable` または `unnullable` として明示する。
+
+nullability が仕様上必要な対象で、どちらのプロパティも存在しない状態は、不完全な Preprocessed として扱う。
+
+具体的なプロパティ記法および適用可能対象の完全な一覧は、該当する構文仕様とともに定義する。
+
+## 5. Bitlang Compiled への名前展開
 
 Bitlang Preprocessed のクラスに属する値は、Bitlang Compiled へ変換する際にクラス名を先頭へ展開する。
 
@@ -84,7 +119,7 @@ rrr_ppp.hp
 - struct の field まで完全 flatten するか。
 - struct 自体を Compiled の struct として保持する場合の最終的な命名・参照形式。
 
-## 4. 仕様管理方針
+## 6. 仕様管理方針
 
 このリポジトリを Bitlang Preprocessed の仕様・実装・テストの正本とする。
 
