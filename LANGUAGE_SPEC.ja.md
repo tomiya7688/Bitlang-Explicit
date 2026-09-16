@@ -16,7 +16,8 @@ Bitlang 本体では省略・推論・糖衣構文を許可できるが、Bitlan
 - 静的解析器および後段のコンパイラが、周辺コードや暗黙規則を推測せずに対象の性質を判断できる形を目標とする。
 - 互いに反対の意味を持つ状態について、一方だけを省略形として扱わず、双方を明示的なプロパティとして表現する。
 
-この原則は nullability、所有・寿命、変更可否など、今後定義される意味論上のプロパティ全般に適用する。
+具体的な正規プロパティ集合と各軸の意味は [PROPERTIES.ja.md](PROPERTIES.ja.md) を正本とする。
+借用状態の詳細は [BORROW_STATE.ja.md](BORROW_STATE.ja.md) を正本とする。
 
 ## 2. 識別子と大文字小文字
 
@@ -58,25 +59,37 @@ var int hit_point = 300; // 別識別子
 
 識別子の case-insensitive 規則は、文字列および文字の内容には適用しない。
 
-## 4. Nullability プロパティ
+## 4. 正規プロパティモデル
 
-Bitlang Preprocessed では nullability を暗黙にしない。
+Bitlang Preprocessed では、対象に意味を持つプロパティ軸について最終状態を明示する。
 
-nullability を持つ対象には、次のどちらかのプロパティを明示する。
+代表例には以下が含まれる。
 
-- `nullable` : `null` を取り得る。
-- `unnullable` : `null` を取ることができない。
+```text
+Public / Private
+Protected / Unprotected
+Exported / Unexported
+Readable / Unreadable
+Writeable / Unwriteable
+Reassignable / Unreassignable
+Owned / Borrowed
+Copyable / Uncopyable
+Movable / Unmovable
+Unmoved / Moved
+Auto_release / Manual_release
+Releasable / Unreleasable
+Unreleased / Released
+Initialized / Uninitialized
+nullable / unnullable
+Optional / Required
+Const / Unconst
+```
 
-`unnullable` は `nullable` の省略時既定値ではなく、独立した明示プロパティである。
-同様に `nullable` も例外指定ではない。
+lifetime や borrow state も明示対象である。
 
-したがって、Preprocessed の正規化済み表現では「プロパティが書かれていないので non-null とみなす」といった暗黙規則を使用しない。
+ここに列挙した各軸の完全な意味、独立性、状態遷移、整合性規則は [PROPERTIES.ja.md](PROPERTIES.ja.md) および [BORROW_STATE.ja.md](BORROW_STATE.ja.md) で管理する。
 
-プリプロセッサは Bitlang 側の記述や型・式・制御フローから nullability を決定できる場合でも、Preprocessed を生成する際には決定結果を `nullable` または `unnullable` として明示する。
-
-nullability が仕様上必要な対象で、どちらのプロパティも存在しない状態は、不完全な Preprocessed として扱う。
-
-具体的なプロパティ記法および適用可能対象の完全な一覧は、該当する構文仕様とともに定義する。
+特に nullability は暗黙にしない。nullability が意味を持つ対象では `nullable` または `unnullable` のどちらかを必ず持ち、どちらも存在しない状態は不完全な Preprocessed として扱う。
 
 ## 5. Bitlang Compiled への名前展開
 
@@ -119,10 +132,26 @@ rrr_ppp.hp
 - struct の field まで完全 flatten するか。
 - struct 自体を Compiled の struct として保持する場合の最終的な命名・参照形式。
 
-## 6. 仕様管理方針
+## 6. Bitlang source との境界
+
+Bitlang source は人間が記述する言語として、省略、推論、糖衣構文、プリプロセッサ関数による変換を扱う。
+
+Bitlang Preprocessed はそれらの処理後に得られる正規言語であり、source 側の省略規則や書きやすさを再定義しない。
+
+```text
+Bitlang source
+    -> preprocess / normalize
+    -> Bitlang Preprocessed
+    -> static analysis / compile
+    -> Bitlang Compiled
+```
+
+Bitlang source 側の仕様は `tomiya7688/Bitlang`、Bitlang Compiled 側の仕様は `tomiya7688/Bitlang_compiled` をそれぞれ正本とする。
+
+## 7. 仕様管理方針
 
 このリポジトリを Bitlang Preprocessed の仕様・実装・テストの正本とする。
 
 Bitlang 本体の仕様とは分離して管理し、両者の接続は変換規則として明示的に定義する。
 
-今後この文書には、確定した仕様のみを追加する。検討案は確定仕様と混在させず、必要に応じて未確定事項として明示する。
+確定仕様と検討中事項を混在させず、未確定事項は未確定として明示する。
