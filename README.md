@@ -1,8 +1,10 @@
 # Bitlang_preprocessed
 
-Bitlang Preprocessed is an independent language used as the normalized output of the Bitlang preprocessor.
+Bitlang Preprocessed is the **fully explicit normalized form of Bitlang** produced by the Bitlang preprocessor.
 
-This repository is the canonical home for **Bitlang Preprocessed specifications, implementation, and tests**. It is managed separately from the human-writable Bitlang source language.
+It is not a separate semantic language from Bitlang source. Ordinary Bitlang source can explicitly write every canonical property used here; the difference is that source may omit or abbreviate them, while Bitlang Preprocessed requires the applicable final states to be explicit.
+
+This repository is the canonical home for **the fully explicit Preprocessed form's specifications, implementation, and tests**. It is managed separately from the source-facing repository as a stage/responsibility boundary.
 
 ## Specifications
 
