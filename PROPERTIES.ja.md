@@ -336,7 +336,27 @@ unnullable Required Unconst
 
 例として、実際に borrow が有効な対象を `Unborrowed` とする、資源を持たない借用経路を不正に `Releasable` とする、`Released` の資源を通常アクセス可能な生資源として扱う、などの矛盾は静的解析で拒否または診断する。
 
-## 18. Bitlang source との境界
+## 18. 破棄安全性
+
+release / destruction / destructor / finalizer / owner teardown は、生成元に関係なく同じ安全規則へ従う。
+
+次のような破棄が静的に不正と証明できる場合は **error** とし、warningのまま通してはならない。
+
+- `Released` 済み資源の再release/finalization;
+- live borrow / reference をdanglingにするowner破棄;
+- `Unreleasable` な経路からのrelease;
+- ownership移譲なしの非owner経路からの破棄;
+- lifetime / finalization trigger と矛盾する時点での破棄;
+- 同一資源を複数経路から二重破棄できるcontrol flow;
+- language conversion / preprocessing が上記状態を生成する変換。
+
+source code、language adapter、macro、preprocessor function、自動cleanup、compiler loweringのどれが生成した操作であっても例外にしない。
+
+Bitlang Preprocessedへ到達した時点でpropertyは完全明示されるが、それは「安全性検査済みだからcompilerが無条件で信頼してよい」という意味ではない。compiler/static analysisは明示されたpropertyとcontrol flowを用いて破棄安全性を検証し、不正を証明した場合はcompile errorとする。
+
+危険性が疑われるだけで不正を証明できない場合はwarningとしてよい。ただし、その操作自体の仕様が安全性のproofを要求する場合は、proof不能を理由にerrorとすることができる。
+
+## 19. Bitlang source との境界
 
 Bitlang source 側の責務は次の通り。
 
