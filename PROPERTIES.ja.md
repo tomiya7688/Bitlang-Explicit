@@ -207,7 +207,31 @@ Uninitialized
 
 `Uninitialized` の対象を値として読むことはできない。正当な初期化によって `Initialized` へ遷移する。
 
-## 12. nullability
+## 12. initialization trigger
+
+初期化済みかどうかの状態とは別に、自動初期化をいつ行うかを正規propertyとして明示する。
+
+```text
+Declaration_initialization
+Owner_initialization
+First_reach_initialization
+First_use_initialization
+Manual_initialization
+```
+
+- `Declaration_initialization`: 各storage instanceの通常の宣言初期化地点で初期化する。
+- `Owner_initialization`: 所有object / type / module等のowner初期化時に初期化する。
+- `First_reach_initialization`: そのstorage instanceについて、実行が宣言へ最初に到達した時に1回だけ初期化する。
+- `First_use_initialization`: そのstorage instanceを最初に有効利用する時に1回だけ初期化する。
+- `Manual_initialization`: 自動初期化を行わず、利用前に明示的な初期化操作を要求する。
+
+この軸の正規適用対象は variable / field とする。
+
+`Static / Dynamic` とは独立しており、`Static` だから特定の初期化時期になるとは決めない。異なるsource languageの意味論は、変換・preprocessing時に適切なinitialization triggerへ解決する。
+
+`Initialized / Uninitialized` は現在状態、initialization triggerは初期化方針・時期を表すため、両者も別軸である。
+
+## 13. nullability
 
 ```text
 nullable
@@ -218,7 +242,7 @@ nullability が適用される対象では必ずどちらかを明示する。
 
 `unnullable` は省略時既定値ではなく、`nullable` と対になる正規プロパティである。
 
-## 13. optionality
+## 14. optionality
 
 ```text
 Optional
@@ -229,7 +253,7 @@ optionality が宣言上の意味を持つ対象では、presence が任意か�
 
 Bitlang source 側の `Optional<T>` 等の記法と、Preprocessed の正規プロパティ表現の対応は source -> preprocessed 変換規則で管理する。
 
-## 14. const
+## 15. const
 
 ```text
 Const
@@ -240,7 +264,7 @@ Unconst
 
 全条件明示の原則により、const 性が意味を持つ対象では `Const / Unconst` のどちらかを明示する。
 
-## 15. プロパティ間の直交性
+## 16. プロパティ間の直交性
 
 可能な限り各プロパティ軸を独立して保持する。
 
@@ -253,7 +277,7 @@ Readable Writeable Reassignable
 Owned Unborrowed
 Copyable Movable Unmoved
 Auto_release Releasable Unreleased
-Local_lifetime Initialized
+Local_lifetime Initialized Declaration_initialization
 unnullable Required Unconst
 ```
 
@@ -261,7 +285,7 @@ unnullable Required Unconst
 
 例として、実際に borrow が有効な対象を `Unborrowed` とする、資源を持たない借用経路を不正に `Releasable` とする、`Released` の資源を通常アクセス可能な生資源として扱う、などの矛盾は静的解析で拒否または診断する。
 
-## 16. Bitlang source との境界
+## 17. Bitlang source との境界
 
 Bitlang source 側の責務は次の通り。
 
