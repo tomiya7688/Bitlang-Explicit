@@ -40,7 +40,48 @@ Unexported
 
 これらは独立した軸である。
 
-## 3. 読み書き・再代入
+## 3. 静的保持と instance access
+
+静的保持と、instance が必要かどうかは別軸として明示する。
+
+### retention
+
+```text
+Static
+Dynamic
+```
+
+- `Static`: 対象を静的に保持する。
+- `Dynamic`: 対象を静的には保持せず、適用可能な通常の非staticな lifetime / storage 関係に従う。
+
+ここでの `Dynamic` は dynamic typing、dynamic dispatch、可変性を意味しない。`Static` の対となる retention property である。
+
+### instance access
+
+```text
+Instance_required
+Instance_unrequired
+```
+
+- `Instance_required`: 適用可能な型memberへアクセスするために、その型のinstanceを必要とする。
+- `Instance_unrequired`: instanceを生成・保持していなくても、そのmemberへアクセスできる。
+
+retention と instance access は独立しているため、意味を持つ対象では次の組み合わせを個別に表現できる。
+
+```text
+Static  + Instance_required
+Static  + Instance_unrequired
+Dynamic + Instance_required
+Dynamic + Instance_unrequired
+```
+
+ただし、宣言種別上意味を持たない組み合わせまで合法になるわけではない。
+
+Bitlang source の `Direct` は `Instance_unrequired` へ展開されるsource-only shorthandであり、Bitlang Preprocessedでは `Direct` を残さない。
+
+また `Static / Dynamic` は lifetime 軸そのものではない。`Static_lifetime` 等とは別プロパティとして保持し、最終状態の整合性を検証する。
+
+## 4. 読み書き・再代入
 
 ```text
 Readable
@@ -57,7 +98,7 @@ Unreassignable
 
 これらは独立した軸であり、単一の `mutable / immutable` だけでまとめない。
 
-## 4. 所有権
+## 5. 所有権
 
 ```text
 Owned
@@ -70,7 +111,7 @@ Borrowed
 
 所有権は pointer/reference 型や読み書き権限とは別軸である。
 
-## 5. 借用状態
+## 6. 借用状態
 
 借用状態の正規仕様は [BORROW_STATE.ja.md](BORROW_STATE.ja.md) を正本とする。
 
@@ -82,7 +123,7 @@ Exclusive_borrowed
 
 `Owned / Borrowed` と借用状態は別軸である。
 
-## 6. copy / move capability
+## 7. copy / move capability
 
 ```text
 Copyable
@@ -94,7 +135,7 @@ Unmovable
 
 copy可能性とmove可能性は独立した軸であり、ownershipとも独立して表現する。
 
-## 7. move state
+## 8. move state
 
 ```text
 Unmoved
@@ -107,7 +148,7 @@ Moved
 
 プリプロセッサは明示的に `Moved -> Unmoved` 等へ変更できるが、実際の資源状態と矛盾する場合は warning または error の対象となる。
 
-## 8. release policy / capability / state
+## 9. release policy / capability / state
 
 release は少なくとも次の3軸に分離する。
 
@@ -136,7 +177,7 @@ Released
 
 `Released` 後の通常アクセス、新規参照生成、二重解放は無効である。正当な再確保・再初期化が行われた場合は `Released -> Unreleased` へ遷移できる。
 
-## 9. lifetime
+## 10. lifetime
 
 現在定義済みの lifetime property は次の通り。
 
@@ -152,7 +193,7 @@ lifetime は ownership、access capability、pointer/reference 型とは別軸�
 
 借用先や依存値が、その参照元・owner より長い lifetime を持つ状態は静的解析対象となる。
 
-## 10. initialization state
+## 11. initialization state
 
 ```text
 Initialized
@@ -161,7 +202,7 @@ Uninitialized
 
 `Uninitialized` の対象を値として読むことはできない。正当な初期化によって `Initialized` へ遷移する。
 
-## 11. nullability
+## 12. nullability
 
 ```text
 nullable
@@ -172,7 +213,7 @@ nullability が適用される対象では必ずどちらかを明示する。
 
 `unnullable` は省略時既定値ではなく、`nullable` と対になる正規プロパティである。
 
-## 12. optionality
+## 13. optionality
 
 ```text
 Optional
@@ -183,7 +224,7 @@ optionality が宣言上の意味を持つ対象では、presence が任意か�
 
 Bitlang source 側の `Optional<T>` 等の記法と、Preprocessed の正規プロパティ表現の対応は source -> preprocessed 変換規則で管理する。
 
-## 13. const
+## 14. const
 
 ```text
 Const
@@ -194,7 +235,7 @@ Unconst
 
 全条件明示の原則により、const 性が意味を持つ対象では `Const / Unconst` のどちらかを明示する。
 
-## 14. プロパティ間の直交性
+## 15. プロパティ間の直交性
 
 可能な限り各プロパティ軸を独立して保持する。
 
@@ -202,6 +243,7 @@ Unconst
 
 ```text
 Private Unprotected Unexported
+Dynamic Instance_required
 Readable Writeable Reassignable
 Owned Unborrowed
 Copyable Movable Unmoved
@@ -214,7 +256,7 @@ unnullable Required Unconst
 
 例として、実際に borrow が有効な対象を `Unborrowed` とする、資源を持たない借用経路を不正に `Releasable` とする、`Released` の資源を通常アクセス可能な生資源として扱う、などの矛盾は静的解析で拒否または診断する。
 
-## 15. Bitlang source との境界
+## 16. Bitlang source との境界
 
 Bitlang source 側の責務は次の通り。
 
