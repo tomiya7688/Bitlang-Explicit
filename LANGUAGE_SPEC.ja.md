@@ -82,12 +82,14 @@ Auto_release / Manual_release
 Releasable / Unreleasable
 Unreleased / Released
 Initialized / Uninitialized
+Declaration_initialization / Owner_initialization / First_reach_initialization / First_use_initialization / Manual_initialization
+Scope_end_finalization / Owner_end_finalization / Module_end_finalization / Program_end_finalization / Manual_finalization
 nullable / unnullable
 Optional / Required
 Const / Unconst
 ```
 
-lifetime や borrow state も明示対象である。`Static / Dynamic` は retention、`Instance_required / Instance_unrequired` は instance access requirement を表す独立軸であり、lifetime とは別に明示する。
+lifetime や borrow state も明示対象である。`Static / Dynamic` は retention、`Instance_required / Instance_unrequired` は instance access requirement、initialization trigger は初期化時期、finalization trigger は終了処理時期を表す独立軸であり、互いに必要な整合性を保ちながら別々に明示する。
 
 ここに列挙した各軸の完全な意味、独立性、状態遷移、整合性規則は [PROPERTIES.ja.md](PROPERTIES.ja.md) および [BORROW_STATE.ja.md](BORROW_STATE.ja.md) で管理する。
 
