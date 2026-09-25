@@ -1,13 +1,13 @@
 # Bitlang Preprocessed 言語仕様
 
-> この文書は **Bitlang Preprocessed** の仕様であり、Bitlang 本体の仕様ではない。
-> Bitlang Preprocessed は Bitlang のプリプロセッサ出力として利用される独立した言語として扱う。
+> この文書は **Bitlang Preprocessed**、すなわちBitlangの完全明示された正規化後形式の仕様である。
+> Bitlang sourceとは別の意味体系を持つ独立言語ではない。別リポジトリとして管理するのは処理段階・仕様責務を分離するためである。
 
 ## 1. 基本設計原則
 
 Bitlang Preprocessed は、プリプロセッサ後のプログラムについて意味論上必要となる条件を可能な限り明示的に保持する。
 
-Bitlang 本体では省略・推論・糖衣構文を許可できるが、Bitlang Preprocessed ではプリプロセッサがそれらを解決し、必要なプロパティを明示した状態で出力する。
+Bitlang sourceでは省略・推論・糖衣構文を許可できるが、source自身もPreprocessedで使われる全正規propertyを明示的に記述できる。Bitlang Preprocessedではプリプロセッサが省略等を解決し、適用可能な最終propertyを明示した状態で出力する。
 
 ### 全条件明示の原則
 
@@ -136,9 +136,13 @@ rrr_ppp.hp
 
 ## 6. Bitlang source との境界
 
-Bitlang source は人間が記述する言語として、省略、推論、糖衣構文、プリプロセッサ関数による変換を扱う。
+Bitlang source と Bitlang Preprocessed は同じBitlangの異なる正規化状態である。
 
-Bitlang Preprocessed はそれらの処理後に得られる正規言語であり、source 側の省略規則や書きやすさを再定義しない。
+Bitlang source は省略、推論、糖衣構文、プリプロセッサ関数による変換を扱える一方、**Preprocessedに存在する全てのcanonical propertyをsourceから直接明示することもできる**。
+
+Bitlang Preprocessed はそれらの処理後に得られる完全明示形であり、source側の省略規則や書きやすさを再定義しない。
+
+したがって違いは「何のpropertyを表現できるか」ではなく、「適用可能なpropertyを省略したまま境界を越えられるか」である。
 
 ```text
 Bitlang source
@@ -154,6 +158,6 @@ Bitlang source 側の仕様は `tomiya7688/Bitlang`、Bitlang Compiled 側の仕
 
 このリポジトリを Bitlang Preprocessed の仕様・実装・テストの正本とする。
 
-Bitlang 本体の仕様とは分離して管理し、両者の接続は変換規則として明示的に定義する。
+Bitlang source側の仕様とは別リポジトリで管理するが、これは同一Bitlangのsource-facing規則とfully-explicit規則の責務分離である。接続は正規化規則として明示的に定義する。
 
 確定仕様と検討中事項を混在させず、未確定事項は未確定として明示する。
