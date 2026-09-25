@@ -18,8 +18,8 @@ This repository is the canonical home for **the fully explicit Preprocessed form
 Bitlang source
     -> Bitlang preprocessor
     -> Bitlang Preprocessed
-    -> static analysis / compiler
-    -> Bitlang Compiled
+    -> Bitlang Lowerer
+    -> Bitlang Low
 ```
 
 Bitlang source may omit or derive information for convenience. Bitlang Preprocessed must preserve the resolved semantic state explicitly so later stages do not need to reconstruct omitted source semantics.
