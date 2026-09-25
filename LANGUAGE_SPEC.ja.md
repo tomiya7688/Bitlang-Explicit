@@ -95,6 +95,14 @@ lifetime や borrow state も明示対象である。`Static / Dynamic` は rete
 
 特に nullability は暗黙にしない。nullability が意味を持つ対象では `nullable` または `unnullable` のどちらかを必ず持ち、どちらも存在しない状態は不完全な Preprocessed として扱う。
 
+### 破棄安全性は再検証する
+
+Bitlang Preprocessedはfully explicitであるが、生成元を信頼済みとみなして危険な破棄を許可してよいわけではない。
+
+static analysis / compilerは、明示されたownership、borrow state、release state、lifetime、finalization trigger等を使用し、provably invalidなrelease/finalization/owner teardownをcompile errorとして拒否する。
+
+language adapterやpreprocessorが生成した操作も手書きコードと同じ安全規則へ従う。
+
 ## 5. Bitlang Compiled への名前展開
 
 Bitlang Preprocessed のクラスに属する値は、Bitlang Compiled へ変換する際にクラス名を先頭へ展開する。
