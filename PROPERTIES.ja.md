@@ -103,6 +103,19 @@ Bitlang source の `Direct` は `Instance_unrequired` へ展開されるsource-o
 
 また `Static / Dynamic` は lifetime 軸そのものではない。`Static_lifetime` 等とは別プロパティとして保持し、最終状態の整合性を検証する。
 
+### functionに対するretention
+
+functionに対する `Static / Dynamic` は、実行コード自体の寿命ではなく **function-associated state** の保持方式を表す。
+
+function-associated stateには、closure environment、capture storage、first-class function object state、その他function representationが所有する状態を含める。
+
+- `Static`: 適用可能なfunction-associated stateをstatic retentionする。
+- `Dynamic`: 適用可能なfunction-associated stateは通常のowner / lifetimeに従う。
+
+状態を持たない通常のnamed functionではruntime storage上の差が観測不能な場合があるが、propertyはsemantic contractとして明示する。
+
+`Instance_required / Instance_unrequired` とは独立であり、function-associated stateのinitialization / finalization時期も別property/ruleで決定する。
+
 ## 4. 読み書き・再代入
 
 ```text
