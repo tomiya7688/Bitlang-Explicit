@@ -2,7 +2,7 @@
 
 この文書は **Bitlang Preprocessed に出力される正規プロパティ集合**を定義する。
 
-Bitlang source 側では、利用者が一部のプロパティを省略したり、プリプロセッサ規則によって補完・変換したりできる。一方 Bitlang Preprocessed では、意味論上必要な状態を後段が推測し直さなくてよいように、適用可能なプロパティ軸を明示する。
+Bitlang source側でも、この文書で定義する全canonical propertyを適用可能な対象へ明示的に記述できる。sourceではさらに一部propertyの省略や、プリプロセッサ規則による補完・変換が許される。一方Bitlang Preprocessedでは、意味論上必要な状態を後段が推測し直さなくてよいように、適用可能なproperty軸を全て明示する。
 
 ## 1. 全条件明示
 
@@ -14,6 +14,23 @@ Bitlang source 側では、利用者が一部のプロパティを省略した�
 - 後段のコンパイラが「書かれていないので既定値」と解釈することを要求しない。
 - 相反する状態を持つ軸は、一方だけを省略形にせず、双方を正規プロパティとして扱う。
 - その軸自体が対象に適用されない場合まで、無意味なプロパティを強制するものではない。
+
+### sourceとのproperty vocabulary共有
+
+この文書にある正規propertyは、Bitlang sourceからも全て明示指定可能である。
+
+「Preprocessedで必須」であることは「sourceでは書けない」という意味ではない。差は次の通り。
+
+```text
+Bitlang source
+    -> 明示してもよい
+    -> 省略してpreprocessorに解決させてもよい
+
+Bitlang Preprocessed
+    -> 適用可能な最終状態を必ず明示する
+```
+
+したがって、全propertyを明示したBitlang sourceは、source-only構文がなければPreprocessedと非常に近い形になり得る。
 
 ## 2. 可視性
 
@@ -289,7 +306,7 @@ unnullable Required Unconst
 
 Bitlang source 側の責務は次の通り。
 
-- 利用者がプロパティを明示できること。
+- このPreprocessed property modelに存在する全propertyを、適用可能な対象へ利用者が直接明示できること。
 - 記述を省略できる箇所では、プリプロセッサが不足情報を解決できること。
 - プリプロセッサ関数がプロパティを検査・追加・変更できること。
 - 危険な override に対して warning / error を出せること。
