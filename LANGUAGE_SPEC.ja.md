@@ -69,6 +69,8 @@ Bitlang Preprocessed では、対象に意味を持つプロパティ軸につ�
 Public / Private
 Protected / Unprotected
 Exported / Unexported
+Static / Dynamic
+Instance_required / Instance_unrequired
 Readable / Unreadable
 Writeable / Unwriteable
 Reassignable / Unreassignable
@@ -85,7 +87,7 @@ Optional / Required
 Const / Unconst
 ```
 
-lifetime や borrow state も明示対象である。
+lifetime や borrow state も明示対象である。`Static / Dynamic` は retention、`Instance_required / Instance_unrequired` は instance access requirement を表す独立軸であり、lifetime とは別に明示する。
 
 ここに列挙した各軸の完全な意味、独立性、状態遷移、整合性規則は [PROPERTIES.ja.md](PROPERTIES.ja.md) および [BORROW_STATE.ja.md](BORROW_STATE.ja.md) で管理する。
 
