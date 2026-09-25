@@ -77,6 +77,11 @@ Dynamic + Instance_unrequired
 
 ただし、宣言種別上意味を持たない組み合わせまで合法になるわけではない。
 
+正規の適用対象は次の通り。
+
+- `Static / Dynamic`: variable / field / function
+- `Instance_required / Instance_unrequired`: field / function
+
 Bitlang source の `Direct` は `Instance_unrequired` へ展開されるsource-only shorthandであり、Bitlang Preprocessedでは `Direct` を残さない。
 
 また `Static / Dynamic` は lifetime 軸そのものではない。`Static_lifetime` 等とは別プロパティとして保持し、最終状態の整合性を検証する。
