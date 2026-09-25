@@ -73,6 +73,32 @@ Dynamic
 
 ここでの `Dynamic` は dynamic typing、dynamic dispatch、可変性を意味しない。`Static` の対となる retention property である。
 
+### retention domain
+
+```text
+Process_retention
+Thread_retention
+Task_retention
+```
+
+retention domain は、保持状態をどの実行domainで共有するかを表す。
+
+- `Process_retention`: process / program 全体で1つの保持状態を共有する。
+- `Thread_retention`: threadごとに独立した保持状態を持つ。
+- `Task_retention`: task / coroutine相当の実行単位ごとに独立した保持状態を持つ。
+
+`Static / Dynamic` および lifetime とは独立した正規property軸である。
+
+正規適用対象は variable / field / function とする。functionではfunction-associated stateの共有domainを表す。
+
+Bitlang sourceで省略された場合の既定値は:
+
+```text
+Process_retention
+```
+
+Bitlang Explicitでは適用可能な対象について最終状態を必ず明示する。
+
 ### instance access
 
 ```text
