@@ -103,9 +103,9 @@ static analysis / compilerは、明示されたownership、borrow state、releas
 
 language adapterやpreprocessorが生成した操作も手書きコードと同じ安全規則へ従う。
 
-## 5. Bitlang Compiled への名前展開
+## 5. Bitlang Low への名前展開
 
-Bitlang Preprocessed のクラスに属する値は、Bitlang Compiled へ変換する際にクラス名を先頭へ展開する。
+Bitlang Preprocessed のクラスに属する値は、Bitlang Low へ変換する際にクラス名を先頭へ展開する。
 
 概念例:
 
@@ -125,7 +125,7 @@ class RRR {
 rrr_ppp_hp
 ```
 
-ただし Bitlang Compiled は struct 型を持つため、struct をどこまで flatten するかは Bitlang Compiled 側の実装・変換規則に依存する。
+ただし Bitlang Low は struct 型を持つため、struct をどこまで flatten するかは Bitlang Low 側の実装・変換規則に依存する。
 
 例えば struct を保持する場合は、概念上次のような形になり得る。
 
@@ -158,11 +158,11 @@ Bitlang Preprocessed はそれらの処理後に得られる完全明示形で�
 Bitlang source
     -> preprocess / normalize
     -> Bitlang Preprocessed
-    -> static analysis / compile
-    -> Bitlang Compiled
+    -> Bitlang Lowerer
+    -> Bitlang Low
 ```
 
-Bitlang source 側の仕様は `tomiya7688/Bitlang`、Bitlang Compiled 側の仕様は `tomiya7688/Bitlang_compiled` をそれぞれ正本とする。
+Bitlang source 側の仕様は `tomiya7688/Bitlang`、Bitlang Low 側の仕様は `tomiya7688/Bitlang_low` をそれぞれ正本とする。
 
 ## 7. 仕様管理方針
 
