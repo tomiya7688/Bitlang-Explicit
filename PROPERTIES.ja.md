@@ -248,7 +248,41 @@ Manual_initialization
 
 `Initialized / Uninitialized` は現在状態、initialization triggerは初期化方針・時期を表すため、両者も別軸である。
 
-## 13. nullability
+## 13. finalization trigger
+
+破棄・destructor/finalizer等の終了処理をいつ実行するかを、lifetime・retention・release policyとは独立した正規propertyとして明示する。
+
+```text
+Scope_end_finalization
+Owner_end_finalization
+Module_end_finalization
+Program_end_finalization
+Manual_finalization
+```
+
+- `Scope_end_finalization`: 所有するlexical/function scope終了時に自動finalizationする。
+- `Owner_end_finalization`: 所有object / type / storage owner終了時に自動finalizationする。
+- `Module_end_finalization`: moduleの終了・unload時に自動finalizationする。
+- `Program_end_finalization`: program/process終了処理時に自動finalizationする。
+- `Manual_finalization`: 自動finalizationを行わず、必要な場合は明示的finalizationを要求する。
+
+正規の適用対象は variable / field / parameter とする。
+
+finalization triggerは `Auto_release / Manual_release` と別軸である。finalizer/destructorは任意の終了処理を行い得る一方、release policyはrelease/freeを自動生成するかを表す。同じ対象で両軸を独立して保持する。
+
+Bitlang sourceで省略された場合の既定値はresolved lifetimeから決定する。
+
+```text
+Local_lifetime    -> Scope_end_finalization
+Function_lifetime -> Scope_end_finalization
+Object_lifetime   -> Owner_end_finalization
+Module_lifetime   -> Module_end_finalization
+Static_lifetime   -> Program_end_finalization
+```
+
+`Manual_finalization` は暗黙既定値にせず、source / language adapter / project rule / preprocessing ruleから明示的に選択する。
+
+## 14. nullability
 
 ```text
 nullable
@@ -259,7 +293,7 @@ nullability が適用される対象では必ずどちらかを明示する。
 
 `unnullable` は省略時既定値ではなく、`nullable` と対になる正規プロパティである。
 
-## 14. optionality
+## 15. optionality
 
 ```text
 Optional
@@ -270,7 +304,7 @@ optionality が宣言上の意味を持つ対象では、presence が任意か�
 
 Bitlang source 側の `Optional<T>` 等の記法と、Preprocessed の正規プロパティ表現の対応は source -> preprocessed 変換規則で管理する。
 
-## 15. const
+## 16. const
 
 ```text
 Const
@@ -281,7 +315,7 @@ Unconst
 
 全条件明示の原則により、const 性が意味を持つ対象では `Const / Unconst` のどちらかを明示する。
 
-## 16. プロパティ間の直交性
+## 17. プロパティ間の直交性
 
 可能な限り各プロパティ軸を独立して保持する。
 
@@ -294,7 +328,7 @@ Readable Writeable Reassignable
 Owned Unborrowed
 Copyable Movable Unmoved
 Auto_release Releasable Unreleased
-Local_lifetime Initialized Declaration_initialization
+Local_lifetime Initialized Declaration_initialization Scope_end_finalization
 unnullable Required Unconst
 ```
 
@@ -302,7 +336,7 @@ unnullable Required Unconst
 
 例として、実際に borrow が有効な対象を `Unborrowed` とする、資源を持たない借用経路を不正に `Releasable` とする、`Released` の資源を通常アクセス可能な生資源として扱う、などの矛盾は静的解析で拒否または診断する。
 
-## 17. Bitlang source との境界
+## 18. Bitlang source との境界
 
 Bitlang source 側の責務は次の通り。
 
