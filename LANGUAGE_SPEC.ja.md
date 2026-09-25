@@ -95,6 +95,33 @@ lifetime や borrow state も明示対象である。`Static / Dynamic` は rete
 
 特に nullability は暗黙にしない。nullability が意味を持つ対象では `nullable` または `unnullable` のどちらかを必ず持ち、どちらも存在しない状態は不完全な Preprocessed として扱う。
 
+### static保持状態の順序規則
+
+static保持状態の初期化順序はdependency graphで決定する。
+
+- 明示的な初期化順序制約
+- initializerが利用する静的に判明した依存関係
+- owner / moduleの初期化依存関係
+
+をgraph edgeとして扱い、dependencyをdependentより先に初期化する。
+
+graphだけで順序が決まらない場合のtie-breakは:
+
+1. 同一declaration field内はlexical declaration order
+2. 無関係なfield / module間はcanonical fully-qualified declaration name order
+
+とする。
+
+`First_reach_initialization` / `First_use_initialization` はlazy semanticsを維持し、trigger時に未解決dependencyを先に初期化する。`Manual_initialization` は自動初期化順から除外する。
+
+静的に判明するinitialization cycleはerror。runtime再入でのみ発見できるcycleは、partially initialized stateを公開せずruntime errorとする。
+
+自動finalizationの既定順序は、各retention-domain instanceにおける **実際に成功した初期化順序の逆順** とする。
+
+explicitなfinalization order制約はこの既定順序を調整できるが、dependency / lifetime / destruction safetyと矛盾してはならない。矛盾はerrorとする。
+
+`Thread_retention` / `Task_retention` は各domain instanceごとに独立した実初期化順・逆finalization順を保持する。
+
 ### 破棄安全性は再検証する
 
 Bitlang Preprocessedはfully explicitであるが、生成元を信頼済みとみなして危険な破棄を許可してよいわけではない。
