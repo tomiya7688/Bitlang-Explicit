@@ -375,6 +375,16 @@ unnullable Required Unconst
 
 例として、実際に borrow が有効な対象を `Unborrowed` とする、資源を持たない借用経路を不正に `Releasable` とする、`Released` の資源を通常アクセス可能な生資源として扱う、などの矛盾は静的解析で拒否または診断する。
 
+### default由来でも安全性検査を省略しない
+
+Bitlang source側でfile / class / namespace / module / project / language-adapter等のdefaultからpropertyが補完された場合でも、Bitlang Explicit上では通常の明示propertyと同じ意味を持つ。
+
+propertyの由来は安全性の例外理由にならない。
+
+default解決後のproperty set、operation、control flow、ownership / borrow / lifetime関係、release / finalization、reference利用その他の意味論がprovably unsafe / invalidである場合、static analysis / compilerはerrorとして拒否する。
+
+default、generated code、language conversionのいずれも、安全性errorを抑制・warningへ降格する根拠にはならない。
+
 ## 18. 破棄安全性
 
 release / destruction / destructor / finalizer / owner teardown は、生成元に関係なく同じ安全規則へ従う。
