@@ -90,9 +90,31 @@ Int2x32
 
 `xx` はsource-level shorthandでありBitlang Explicitには残らない。
 
-文字列の最大文字数も `x` / `xx` では表現せず、別のcharacter-count dimensionとして扱う。文字数制限の正式記法は別途定義する。
+文字列の最大文字数は `xxx<N>` で表現する。
 
-これはbackend storage sizeを決定する規則ではなく、semantic widthの正規化規則である。物理storage representationはBitlang Low/backend側で別途決定する。
+例:
+
+```text
+Strxxx3
+    -> 最大3文字
+
+Char
+    -> Strxxx1
+```
+
+character countはbyte/bit幅とは独立したsemantic constraintであるため、`xxx<N>` を `x<N>` へ換算してはならない。
+
+複数の制限は同時に表現できる。
+
+```text
+Strxxx10xx32
+    -> 最大10文字
+    -> 最大32byte
+```
+
+`xx<N>` のbyte幅はcanonical化時に必要に応じて `x<N*8>` へ正規化するが、`xxx<N>` のcharacter-count constraintは独立して保持する。
+
+これはbackend storage sizeを決定する規則ではなく、semantic width / countの正規化規則である。物理storage representationはBitlang Low/backend側で別途決定する。
 
 ## 4. 正規プロパティモデル
 
