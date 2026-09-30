@@ -59,6 +59,34 @@ var int hit_point = 300; // 別識別子
 
 識別子の case-insensitive 規則は、文字列および文字の内容には適用しない。
 
+### `xx` バイト幅表記は残らない
+
+Bitlang source では、bit幅を `x<N>` で指定する型に対して、byte幅を `xx<N>` で指定する糖衣構文を使用できる。
+
+例:
+
+```text
+Int2xx4
+    -> Int2x32
+```
+
+この変換では 1 Bitlang byte = 8 bit とする。
+
+`xx` はsource-level shorthandであり、Bitlang Explicitには残らない。
+
+Bitlang Explicitでは、bit幅を持つ型は常にcanonicalな `x<BitWidth>` 形式で表現する。
+
+したがって、
+
+```text
+Int2xx4
+Int2x32
+```
+
+はsource preprocessing後には同一のcanonical type `Int2x32` へ正規化される。
+
+これはbackend storage sizeを決定する規則ではなく、semantic widthの正規化規則である。物理storage representationはBitlang Low/backend側で別途決定する。
+
 ## 4. 正規プロパティモデル
 
 Bitlang Preprocessed では、対象に意味を持つプロパティ軸について最終状態を明示する。
