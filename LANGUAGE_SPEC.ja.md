@@ -59,9 +59,18 @@ var int hit_point = 300; // 別識別子
 
 識別子の case-insensitive 規則は、文字列および文字の内容には適用しない。
 
-### `xx` バイト幅表記は残らない
+### `x` / `xx` の単位規則
 
-Bitlang source では、bit幅を `x<N>` で指定する型に対して、byte幅を `xx<N>` で指定する糖衣構文を使用できる。
+Bitlangにおけるwidth suffixの単位は型familyによって変更しない。
+
+```text
+x<N>  -> N bit
+xx<N> -> N byte
+```
+
+`x` を文字数、要素数、code point数など別単位へ再解釈してはならない。そうした別dimensionは別の記法を使用する。
+
+Bitlang sourceではbyte幅を `xx<N>` で記述できるが、Bitlang Explicitでは 1 Bitlang byte = 8 bit としてcanonicalな `x<BitWidth>` へ正規化する。
 
 例:
 
@@ -70,20 +79,18 @@ Int2xx4
     -> Int2x32
 ```
 
-この変換では 1 Bitlang byte = 8 bit とする。
-
-`xx` はsource-level shorthandであり、Bitlang Explicitには残らない。
-
-Bitlang Explicitでは、bit幅を持つ型は常にcanonicalな `x<BitWidth>` 形式で表現する。
-
-したがって、
+したがってsource preprocessing後には:
 
 ```text
 Int2xx4
 Int2x32
 ```
 
-はsource preprocessing後には同一のcanonical type `Int2x32` へ正規化される。
+は同一のcanonical type `Int2x32` になる。
+
+`xx` はsource-level shorthandでありBitlang Explicitには残らない。
+
+文字列の最大文字数も `x` / `xx` では表現せず、別のcharacter-count dimensionとして扱う。文字数制限の正式記法は別途定義する。
 
 これはbackend storage sizeを決定する規則ではなく、semantic widthの正規化規則である。物理storage representationはBitlang Low/backend側で別途決定する。
 
