@@ -413,7 +413,38 @@ Caller_class_unrestricted
 
 Bitlang Explicitではtype/classについて最終状態を必ず明示する。
 
-## 18. プロパティ間の直交性
+
+## 18. call-site policy
+
+callable declarationが、どのcallerからcall可能かを独立した正規propertyとして表現する。
+
+```text
+Call_site_unrestricted
+Custom_call_site_policy
+```
+
+canonical適用対象は `function`。method / constructor相当もnormalization後はこの契約へ従う。
+
+`Custom_call_site_policy` はversioned machine-readable expressionを持つ。
+
+代表的なcaller function name predicate:
+
+```text
+caller_function_name_exact(...)
+caller_function_name_prefix(...)
+caller_function_name_suffix(...)
+caller_function_name_glob(...)
+```
+
+identifierはcanonical化後に比較するため大文字小文字を区別せず、`_` は有意。
+
+function value / indirect callによってpolicyを消去してはならない。reachable targetが複数ある場合、call siteのcallerが全ての制限付きtargetで許可されることを証明できなければerror。
+
+visibility / export / import capability / caller class count restrictionとは独立し、最終callは全applicable restrictionを満たす必要がある。
+
+完全仕様は [CALL_SITE_POLICY.ja.md](CALL_SITE_POLICY.ja.md) を正本とする。
+
+## 19. プロパティ間の直交性
 
 可能な限り各プロパティ軸を独立して保持する。
 
@@ -444,7 +475,7 @@ default解決後のproperty set、operation、control flow、ownership / borrow 
 
 default、generated code、language conversionのいずれも、安全性errorを抑制・warningへ降格する根拠にはならない。
 
-## 19. 破棄安全性
+## 20. 破棄安全性
 
 release / destruction / destructor / finalizer / owner teardown は、生成元に関係なく同じ安全規則へ従う。
 
@@ -464,7 +495,7 @@ Bitlang Preprocessedへ到達した時点でpropertyは完全明示されるが�
 
 危険性が疑われるだけで不正を証明できない場合はwarningとしてよい。ただし、その操作自体の仕様が安全性のproofを要求する場合は、proof不能を理由にerrorとすることができる。
 
-## 20. Bitlang source との境界
+## 21. Bitlang source との境界
 
 Bitlang source 側の責務は次の通り。
 
