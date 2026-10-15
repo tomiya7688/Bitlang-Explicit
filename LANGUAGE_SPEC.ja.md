@@ -230,7 +230,46 @@ static analysis / compilerは、明示されたownership、borrow state、releas
 
 language adapterやpreprocessorが生成した操作も手書きコードと同じ安全規則へ従う。
 
-## 5. Bitlang Low への名前展開
+
+## 5. module scope の正規化
+
+Bitlang Explicitでは、source側のfile/module選択を暗黙規則として再解釈しない。
+
+Bitlang sourceの各fileはpreprocessing時に外側moduleを解決する。
+
+- file先頭に明示moduleがある場合はそのmoduleを使用する。
+- 明示moduleがない場合は、拡張子を除いたfile名からmodule名を解決する。
+- namespace mountがある場合は、そのmount prefixの内側にfile moduleを置く。
+- source内の `module X { ... }` は、その範囲だけを追加のnested module scopeとする。
+
+preprocessorはfile-level module指定を、概念上file body全体をmodule scopeで囲う形へ正規化する。
+
+例:
+
+```bitlang
+module Game;
+
+class Player {
+}
+```
+
+は後段が次のscope ownershipとして扱える形へ正規化される。
+
+```bitlang
+module Game {
+    class Player {
+    }
+}
+```
+
+明示moduleがない `player.bit` も同様に、外側 `module player { ... }` を持つ形へ解決される。
+
+この時点では、file名からmoduleを推測する処理、namespace mount lookup、file-headerのmodule sugarを後段へ残さない。Bitlang Explicitの後段は明示されたcanonical module ownershipだけを使用する。
+
+物理file scopeと論理module scopeは別概念である。file単位のpreprocessing/default規則が既に解決済みであることと、module ownershipが明示されていることを混同しない。
+
+
+## 6. Bitlang Low への名前展開
 
 Bitlang Preprocessed のクラスに属する値は、Bitlang Low へ変換する際にクラス名を先頭へ展開する。
 
@@ -271,7 +310,7 @@ rrr_ppp.hp
 - struct の field まで完全 flatten するか。
 - struct 自体を Compiled の struct として保持する場合の最終的な命名・参照形式。
 
-## 6. Bitlang source との境界
+## 7. Bitlang source との境界
 
 Bitlang source と Bitlang Preprocessed は同じBitlangの異なる正規化状態である。
 
@@ -291,7 +330,7 @@ Bitlang source
 
 Bitlang source 側の仕様は `tomiya7688/Bitlang`、Bitlang Low 側の仕様は `tomiya7688/Bitlang_low` をそれぞれ正本とする。
 
-## 7. 仕様管理方針
+## 8. 仕様管理方針
 
 このリポジトリを Bitlang Preprocessed の仕様・実装・テストの正本とする。
 
