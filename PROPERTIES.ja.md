@@ -354,7 +354,40 @@ Unconst
 
 全条件明示の原則により、const 性が意味を持つ対象では `Const / Unconst` のどちらかを明示する。
 
-## 17. プロパティ間の直交性
+
+## 17. 呼び出し元クラス数制限
+
+type / class が、異なる複数のclassから呼び出されることを許可するかを独立した正規property軸として表現する。
+
+```text
+Single_caller_class
+Caller_class_unrestricted
+```
+
+- `Single_caller_class`: 対象classへのcall siteを持てる外部caller classは、program全体で最大1種類とする。
+- `Caller_class_unrestricted`: caller classの種類数にこのpropertyによる上限を設けない。
+
+この軸の正規適用対象は `type` とする。
+
+`Single_caller_class` はinstance数やcall回数を制限しない。同一のcaller classからであれば、複数箇所・複数method・複数instanceから対象classを何度呼び出しても、caller class数は1として扱う。
+
+対象class自身の内部から行うself-callは外部caller class数へ数えない。継承関係があっても、異なるclass宣言は別のcaller classとして数える。
+
+対象となるcallには、対象classのconstructor呼び出し、および対象classに属するstatic / instance function・methodへのcallを含む。単なるtype annotationや型名参照だけではcaller classとして数えない。
+
+間接call / dynamic dispatch等で最終targetが対象classへ到達し得る場合、compiler/static analysisはcaller class制限を証明できなければならない。制限を満たすことを証明できない経路を、暗黙に安全とみなしてはならない。
+
+このpropertyは `Public / Private`、`Protected / Unprotected`、`Exported / Unexported` と独立する。可視性がcallを許可していても、2種類目のcaller classからのcallは `Single_caller_class` によりcompile errorとなる。
+
+Bitlang sourceで省略された場合の既定値は:
+
+```text
+Caller_class_unrestricted
+```
+
+Bitlang Explicitではtype/classについて最終状態を必ず明示する。
+
+## 18. プロパティ間の直交性
 
 可能な限り各プロパティ軸を独立して保持する。
 
@@ -385,7 +418,7 @@ default解決後のproperty set、operation、control flow、ownership / borrow 
 
 default、generated code、language conversionのいずれも、安全性errorを抑制・warningへ降格する根拠にはならない。
 
-## 18. 破棄安全性
+## 19. 破棄安全性
 
 release / destruction / destructor / finalizer / owner teardown は、生成元に関係なく同じ安全規則へ従う。
 
@@ -405,7 +438,7 @@ Bitlang Preprocessedへ到達した時点でpropertyは完全明示されるが�
 
 危険性が疑われるだけで不正を証明できない場合はwarningとしてよい。ただし、その操作自体の仕様が安全性のproofを要求する場合は、proof不能を理由にerrorとすることができる。
 
-## 19. Bitlang source との境界
+## 20. Bitlang source との境界
 
 Bitlang source 側の責務は次の通り。
 
