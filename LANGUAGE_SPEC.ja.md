@@ -272,16 +272,16 @@ module Game {
 
 ### module visibility
 
-canonical module scopeは適用可能な `Public / Private` stateを明示する。
+canonical module scopeは `VISIBILITY.ja.md` の解決済み `scope_visibility` stateを明示する。sourceの `Public / Private` を後段へ残さない。
 
-`Private` moduleはsource-origin file単位の可視性を持つため、preprocessing/name resolutionは次を保証してから後段へ渡す。
+source `Private module` はcanonical `File_visible` へ正規化される。このfile単位の可視性について、preprocessing/name resolutionは次を保証してから後段へ渡す。
 
 - same-file referenceだけがPrivate moduleを解決できる。
 - cross-file import / qualified lookupではPrivate moduleを候補に含めない。
 - import capabilityやalias生成によってPrivate moduleを外部fileへ露出させない。
 - 必要な診断/source mappingのため、file-private判定が完了するまで宣言のorigin file identityを保持する。
 
-Private module配下の宣言が `Exported` であっても、module自身がcross-file lookupへ参加しないため、外部fileからその宣言へ到達する経路にはならない。
+`File_visible` module配下の宣言が `Exported` であっても、module自身がcross-file lookupへ参加しないため、外部fileからその宣言へ到達する経路にはならない。その他の標準/Custom visibilityも同じcanonical visibility engineで検証する。
 
 ## 6. Bitlang Low への名前展開
 
