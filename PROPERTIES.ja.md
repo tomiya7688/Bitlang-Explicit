@@ -36,22 +36,36 @@ Bitlang Preprocessed
 
 ### スコープ可視性
 
+Bitlang Explicitの `scope_visibility` は次の解決済み状態を使用する。
+
 ```text
-Public
-Private
+Owner_visible
+File_visible
+Module_visible
+Module_tree_visible
+Project_visible
+Global_visible
+Custom_scope_visibility
 ```
 
-この軸は module にも適用する。
+`Public / Private` はsource shorthandとして利用できるが、Explicit境界では具体状態へ正規化する。
 
-moduleに対する `Private` は **定義元の物理source file内だけで名前解決可能** であることを表す。
+少なくとも:
 
-- 同じfile内からは通常のmodule/name規則に従って参照できる。
-- 別fileからはimport探索・fully-qualified name探索の候補から除外する。
-- 別fileからimportしても、そのPrivate moduleは「見つからない」ものとして扱い、import capabilityで可視化してはならない。
-- Public moduleの内側にnestedされたPrivate moduleも、このfile-private境界を越えない。
-- `Public` moduleはcross-file module lookupへ参加できるが、内部宣言の `Exported / Unexported` や個別visibilityを自動的に変更しない。
+```text
+Public
+    -> Global_visible
 
-module visibilityとmodule内部declのexport visibilityは独立して保持する。
+Private module
+    -> File_visible
+
+Private class/type member
+    -> Owner_visible
+```
+
+`Custom_scope_visibility` はpackage / assembly / friend / pub(super) / protected-internal等を意味保存するための純粋なscope relation expressionを持つ。
+
+完全な正規仕様は [VISIBILITY.ja.md](VISIBILITY.ja.md) を正本とする。
 
 ### 継承可視性
 
