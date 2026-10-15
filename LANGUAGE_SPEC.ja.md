@@ -116,6 +116,25 @@ Strxxx10xx32
 
 これはbackend storage sizeを決定する規則ではなく、semantic width / countの正規化規則である。物理storage representationはBitlang Low/backend側で別途決定する。
 
+### 無制限 `x*` と真の0幅 `x0`
+
+ビット幅を持つ型familyでは `x*` を**固定のビット幅上限なし**、`x0` を**0ビット**として厳密に区別する。`*` は数値0でもポインタでもなく、無制限のwidth constraintを表す記号である。演算・マクロからwidth値0が導出されても、自動的に `*` に変えてはならない。
+
+```text
+Int10x*    -> 無制限幅の任意精度整数 (符号付き、基数10)
+Uint10x*   -> 無制限幅の任意精度整数 (符号なし、基数10)
+Strx*      -> UTF-8符号化ビット長の上限なし
+Strx0      -> 最大0ビット (空文字列のみ)
+Strxx*     -> Strx* へ正規化するsource表記
+Strxx0     -> Strx0 へ正規化するsource表記
+Strxxx*    -> 文字数上限なし (bit上限には換算しない)
+Strxxx0    -> 最大0文字 (空文字列のみ)
+```
+
+`Str` に基数はないため `Str1x*` は正式表記ではなく、`Strx*` を使用する。`Str` は制約なしの `Strx*` と同じ型であり、他の有限制約がなければ `Strxx*` や `Strxxx*` も同じsemantic typeへ正規化する。一方、別dimensionに有限幅があれば `*` はそれを消去しない。`Int` のデフォルトは `Int10x32` のままであり、`Int10x*` とは異なる型。`Bool` 等width suffixを持たない型に `x*` は付けない。
+
+`Int/Uint` の `x*` は任意精度整数だが、有限メモリに依存するためallocation/resource failureは明示的な実行失敗として扱う。`Float<Radix>x*` は統一suffixとして予約するが、精度・丸め等の意味論が確定するまでfail-closedで拒否する。`Int/Uint/Float` の `x0` は無効な型。sourceとExplicitで制約の意味を変更してはならない。
+
 ### 制約付き文字列の型互換・警告・オーバーフロー
 
 `Strx<N>` の `N` は「UTF-8符号化後の最大ビット数」であり、値の長さが常に `N` bitであるという意味ではない。UTF-8符号化済みの文字列のビット数は8の倍数になる。
