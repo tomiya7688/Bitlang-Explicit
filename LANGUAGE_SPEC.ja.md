@@ -147,6 +147,18 @@ Strxxx0    -> 最大0文字 (空文字列のみ)
 
 同一の `Strx3` 型同士の通常の代入は型不一致ではない。値を生成した側が `Strx3` の容量制約を満たすことを保証する。
 
+### 0サイズ型と0長の意味
+
+0ビットの**意味論上のpayload**と、その値をruntimeで管理するための物理storage/descriptorは区別する。0サイズpayloadは許可できるが、それだけで「ポインタだけの型」になるわけではない。
+
+- `Strx0` / `Strxx0` / `Strxxx0` は空文字列しか持てない有効な制約付き文字列型（空専用宣言は既定の警告対象）。文字列descriptor自体の物理サイズは0とは限らない。
+- `Array<T, Length=0>` は0要素の固定長配列であり、要素アクセスは必ず範囲外。`Array<T>` のruntime長が0であることとは型契約が異なる。
+- `struct Empty { }` のような0-field structは、フィールドpayloadを持たない有効な単一値の型とする。
+- 0サイズ型を `N` 個含む配列には依然 `N` 個の論理要素と添字範囲がある。実メモリで隣接した別アドレスが得られるとは限らない。
+- `Int/Uint/Float` の `x0` と `Boolx0` は不正な型。`Char` はちょうど1 Unicode scalar valueを要求するため、0bitに縮めて空文字列扱いにしてはならない。
+
+ownership、borrow、lifetime、identity、release/finalizationの検証を0サイズだから省略してはならない。`Ref<T>` のnon-nullや区別が必要なobject identityを、ゼロpayloadの物理アドレスだけから推定しない。ターゲットの `sizeof` / alignment / ABI表現はBitlang Lowで別途決定する。
+
 ## 4. 正規プロパティモデル
 
 Bitlang Preprocessed では、対象に意味を持つプロパティ軸について最終状態を明示する。
