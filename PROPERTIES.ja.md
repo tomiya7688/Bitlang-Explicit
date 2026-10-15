@@ -41,6 +41,18 @@ Public
 Private
 ```
 
+この軸は module にも適用する。
+
+moduleに対する `Private` は **定義元の物理source file内だけで名前解決可能** であることを表す。
+
+- 同じfile内からは通常のmodule/name規則に従って参照できる。
+- 別fileからはimport探索・fully-qualified name探索の候補から除外する。
+- 別fileからimportしても、そのPrivate moduleは「見つからない」ものとして扱い、import capabilityで可視化してはならない。
+- Public moduleの内側にnestedされたPrivate moduleも、このfile-private境界を越えない。
+- `Public` moduleはcross-file module lookupへ参加できるが、内部宣言の `Exported / Unexported` や個別visibilityを自動的に変更しない。
+
+module visibilityとmodule内部declのexport visibilityは独立して保持する。
+
 ### 継承可視性
 
 ```text
