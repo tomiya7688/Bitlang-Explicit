@@ -269,6 +269,20 @@ module Game {
 物理file scopeと論理module scopeは別概念である。file単位のpreprocessing/default規則が既に解決済みであることと、module ownershipが明示されていることを混同しない。
 
 
+
+### module visibility
+
+canonical module scopeは適用可能な `Public / Private` stateを明示する。
+
+`Private` moduleはsource-origin file単位の可視性を持つため、preprocessing/name resolutionは次を保証してから後段へ渡す。
+
+- same-file referenceだけがPrivate moduleを解決できる。
+- cross-file import / qualified lookupではPrivate moduleを候補に含めない。
+- import capabilityやalias生成によってPrivate moduleを外部fileへ露出させない。
+- 必要な診断/source mappingのため、file-private判定が完了するまで宣言のorigin file identityを保持する。
+
+Private module配下の宣言が `Exported` であっても、module自身がcross-file lookupへ参加しないため、外部fileからその宣言へ到達する経路にはならない。
+
 ## 6. Bitlang Low への名前展開
 
 Bitlang Preprocessed のクラスに属する値は、Bitlang Low へ変換する際にクラス名を先頭へ展開する。
