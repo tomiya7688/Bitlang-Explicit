@@ -48,6 +48,14 @@ var int hitpoint = 200; // 同一識別子の重複定義
 var int hit_point = 300; // 別識別子
 ```
 
+### Unicode識別子とalias
+
+Bitlang Explicitは日本語を含むUnicode identifierを正式に扱う。
+
+identifierのUTF-8 validation、XID profile、NFC + Unicode default case folding、alias collision、primary symbol identityの規則は [IDENTIFIERS_AND_ALIASES.ja.md](IDENTIFIERS_AND_ALIASES.ja.md) を正本とする。
+
+named declarationはprimary nameに加えて複数aliasを持てる。aliasは同一symbolへのlookup nameであり、別decl/runtime symbolを生成しない。
+
 ## 3. 文字列型と文字型
 
 文字列値および文字値は大文字小文字を区別する。
