@@ -32,7 +32,8 @@ name matchはBitlangのcanonical identifierに対して行う。
 
 - 大文字小文字は識別子identityへ影響しない。
 - `_` は有意。
-- diagnostic用の元source spellingではなくcanonical function nameを判定する。
+- diagnostic用の元source spellingではなくcaller declarationのprimary canonical function nameを判定する。
+- aliasはdefaultのcaller name判定へ影響しない。primary nameが `main` のfunctionへ `log_main` aliasを追加しても `log_*` policyを満たさない。
 
 glob:
 
