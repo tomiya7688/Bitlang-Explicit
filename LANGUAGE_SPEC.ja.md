@@ -291,6 +291,24 @@ source `Private module` はcanonical `File_visible` へ正規化される。こ�
 
 `File_visible` module配下の宣言が `Exported` であっても、module自身がcross-file lookupへ参加しないため、外部fileからその宣言へ到達する経路にはならない。その他の標準/Custom visibilityも同じcanonical visibility engineで検証する。
 
+### 値渡しを既定とする型transfer
+
+Bitlang Explicitではplain `T` を常にvalue semanticsとして扱う。struct / classの種別によって暗黙のreference semanticsへ切り替えない。
+
+```text
+T       -> value
+Ref<T>  -> explicit safe reference
+Ptr<T>  -> explicit raw pointer
+```
+
+plain `T` parameter / assignment / returnがcopyを必要とする場合、`Copyable`でなければerror。`Uncopyable`を理由に暗黙referenceへ変更してはならない。
+
+move可能な値のownership transferは明示されたmove semanticsとして扱い、型は依然 `T` のvalue transferである。
+
+backendがABI上hidden pointer等を使用してもよいが、calleeからcallerの元storageへの変更が観測されるなどvalue semanticsを破壊してはならない。
+
+完全仕様はBitlang source側 `VALUE_SEMANTICS.md` を正本とする。
+
 ## 6. Bitlang Low への名前展開
 
 Bitlang Preprocessed のクラスに属する値は、Bitlang Low へ変換する際にクラス名を先頭へ展開する。
