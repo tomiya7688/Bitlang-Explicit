@@ -185,6 +185,10 @@ Unreassignable
 
 これらは独立した軸であり、単一の `mutable / immutable` だけでまとめない。
 
+`Unreadable` は宣言の全lifetimeで永久に読めないことを意味しない。property transition仕様で許可された場合、program pointごとに `Unreadable -> Readable` 等へ遷移できる。したがってアクセス可否はdeclaration時の1回のproperty setだけでなく、各operation位置のeffective property stateで判定する。
+
+完全なflow-sensitive transition仕様は [PROPERTY_TRANSITIONS.ja.md](PROPERTY_TRANSITIONS.ja.md) を正本とする。
+
 ## 5. 所有権
 
 ```text
