@@ -19,6 +19,25 @@ Bitlang sourceでは省略・推論・糖衣構文を許可できるが、source
 具体的な正規プロパティ集合と各軸の意味は [PROPERTIES.ja.md](PROPERTIES.ja.md) を正本とする。
 借用状態の詳細は [BORROW_STATE.ja.md](BORROW_STATE.ja.md) を正本とする。
 
+### 英語canonical vocabulary
+
+Bitlang Explicitの**言語語彙は英語canonical spellingのみ**を使用する。
+
+Bitlang sourceで日本語keyword / source-facing property / built-in aliasが使われた場合、preprocessing時に同じsemantic tokenへ解決し、Explicitへは英語canonical spellingを出力する。
+
+概念例:
+
+```text
+クラス     -> class
+関数       -> function
+モジュール -> module
+文字列     -> Str
+```
+
+この規則はlanguage vocabularyに対するもの。任意のuser-defined identifierを機械翻訳して英語化してはならない。`利用者`、`実行`等のUnicode symbol名はidentifier/alias仕様に従って保持できる。
+
+sourceで英語と日本語が混在していても、Bitlang Explicitへ到達した時点ではlanguage token spellingは一意な英語canonical表現になる。
+
 ## 2. 識別子と大文字小文字
 
 Bitlang Preprocessed では、文字列値および文字値を除き、大文字小文字を区別しない。
