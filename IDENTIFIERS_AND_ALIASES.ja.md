@@ -100,3 +100,28 @@ alias-aware policyが必要なら将来明示的な別predicateを定義する�
 Explicitではcross-unit/interface name resolutionに必要なcanonical alias setを保持できる。
 
 すべての参照がsymbol identityへresolve済みになった後は、reflection/debug metadata等の別要求がなければBitlang Low前にalias metadataを消去できる。
+
+## 3. Source/Explicit alias構文
+
+Bitlang sourceではdeclaration prefix metadataとしてaliasを指定する。
+
+```bitlang
+Alias(execute, run) function 実行(...)
+別名(execute, run) 関数 実行(...)
+```
+
+`Alias` / `別名` は同じlanguage token。日本語source spellingはpreprocessingで英語canonical `Alias` へ正規化する。
+
+`Alias(...)` はproperty axisではない。property default/precedenceへ参加せず、named declarationのlookup-name metadataとして扱う。
+
+canonical Explicitでは必要なalias metadataを:
+
+```text
+Alias(alias1, alias2, ...) <declaration>
+```
+
+の英語canonical形で保持する。
+
+alias要素はstringではなくordinary identifier。qualified pathは指定しない。declarationに書かれたnameがprimary nameのままであり、alias追加でprimary identityは変化しない。
+
+Explicit canonical formでは1 declarationにつきAlias clauseは最大1個。aliasなしなら省略する。
